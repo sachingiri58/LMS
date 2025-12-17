@@ -78,142 +78,149 @@ const ContactPage = () => {
         <div className={contactStyles.header}>
           <div className={contactStyles.title}>Contact Us</div>
 
-          <div className={contactStyles.mainSection}>
-            {/* FORM */}
-            <div className={contactStyles.formContainer}>
-              <div className={contactStyles.formGlow1}></div>
-              <div className={contactStyles.formGlow2}></div>
-              <div className={contactStyles.formGlow3}></div>
+          <div className={contactStyles.formContainer}>
+            <div className={contactStyles.formGlow1}></div>
+            <div className={contactStyles.formGlow2}></div>
+            <div className={contactStyles.formGlow3}></div>
 
-              <div className={contactStyles.form}>
-                <form
-                  className={contactStyles.formElements}
-                  onSubmit={handleSubmit}
-                >
-                  {/* Full Name */}
-                  <div className={contactStyles.formGroup}>
-                    <label className={contactStyles.label}>
-                      <User className={contactStyles.labelIcon} />
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className={contactStyles.input}
-                      placeholder="Enter your full name"
-                    />
-                  </div>
+            <div className={contactStyles.form}>
+              <form
+                className={contactStyles.formElements}
+                onSubmit={handleSubmit}
+              >
+                {/* Full Name */}
+                <div className={contactStyles.formGroup}>
+                  <label className={contactStyles.label}>
+                    <User className={contactStyles.labelIcon} />
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className={contactStyles.input}
+                    placeholder="Enter your full name"
+                  />
+                </div>
 
-                  {/* Email */}
-                  <div className={contactStyles.formGroup}>
-                    <label className={contactStyles.label}>
-                      <Mailbox className={contactStyles.labelIcon} />
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className={contactStyles.input}
-                      placeholder="Enter your email"
-                    />
-                  </div>
+                {/* Email */}
+                <div className={contactStyles.formGroup}>
+                  <label className={contactStyles.label}>
+                    <Mailbox className={contactStyles.labelIcon} />
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className={contactStyles.input}
+                    placeholder="Enter your email"
+                  />
+                </div>
 
-                  {/* Phone */}
-                  <div className={contactStyles.formGroup}>
-                    <label className={contactStyles.label}>
-                      <Phone className={contactStyles.labelIcon} />
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      maxLength={10}
-                      required
-                      className={contactStyles.input}
-                      placeholder="Enter your phone number"
-                    />
-                    {phoneError && (
-                      <p className={contactStyles.errorText}>{phoneError}</p>
-                    )}
-                  </div>
+                {/* Phone */}
+                <div className={contactStyles.formGroup}>
+                  <label className={contactStyles.label}>
+                    <Phone className={contactStyles.labelIcon} />
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    maxLength={10}
+                    required
+                    className={contactStyles.input}
+                    placeholder="Enter your phone number"
+                  />
+                  {phoneError && (
+                    <p className={contactStyles.errorText}>{phoneError}</p>
+                  )}
+                </div>
 
-                  {/* Subject */}
-                  <div className={contactStyles.formGroup}>
-                    <label className={contactStyles.label}>
-                      <MessageSquare className={contactStyles.labelIcon} />
-                      Subject *
-                    </label>
-                    <select
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      className={contactStyles.select}
-                    >
-                      <option value="">Select subject</option>
-                      <option value="General Inquiry">General Inquiry</option>
-                      <option value="Project Collaboration">
-                        Project Collaboration
-                      </option>
-                      <option value="Support">Support</option>
-                      <option value="Feedback">Feedback</option>
-                    </select>
-                  </div>
-
-                  {/* Message */}
-                  <div className={contactStyles.formGroup}>
-                    <label className={contactStyles.label}>Message *</label>
-                    <textarea
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      rows="5"
-                      className={contactStyles.textarea}
-                      placeholder="Tell us about your inquiry..."
-                    />
-                  </div>
-
-                  {/* BUTTON ✅ */}
-                  <button
-                    type="submit"
-                    disabled={!isFormValid || isSubmitting}
-                    className={`${contactStyles.submitButton} ${
-                      isFormValid && !isSubmitting
-                        ? contactStyles.submitButtonEnabled
-                        : contactStyles.submitButtonDisabled
-                    }`}
+                {/* Subject */}
+                <div className={contactStyles.formGroup}>
+                  <label className={contactStyles.label}>
+                    <MessageSquare className={contactStyles.labelIcon} />
+                    Subject *
+                  </label>
+                  <select
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                    className={contactStyles.select}
                   >
-                    {isSubmitting ? "Sending..." : "Send Message"}
-                  </button>
-                </form>
-              </div>
-            </div>
+                    <option value="">Select subject</option>
+                    <option value="General Inquiry">General Inquiry</option>
+                    <option value="Project Collaboration">
+                      Project Collaboration
+                    </option>
+                    <option value="Support">Support</option>
+                    <option value="Feedback">Feedback</option>
+                  </select>
+                </div>
 
-            {/* ANIMATION */}
-            <div className={contactStyles.animationContainer}>
+                {/* Message */}
+                <div className={contactStyles.formGroup}>
+                  <label className={contactStyles.label}>Message *</label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    rows="5"
+                    className={contactStyles.textarea}
+                    placeholder="Tell us about your inquiry..."
+                  ></textarea>
+                </div>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={!isFormValid || isSubmitting}
+                  className={`
+    ${contactStyles.submitButton}
+    ${isFormValid && !isSubmitting
+                      ? contactStyles.submitButtonEnabled
+                      : contactStyles.submitButtonDisabled}
+  `}
+                >
+                  {isSubmitting ? "Sending..." : "Send Message"}
+                </button>
+
+              </form>
+            </div>
+          </div>
+          {/**Animation Section */}
+          <div className={contactStyles.animationContainer}>
+            <div className={contactStyles.animationWrapper}>
               <DotLottieReact
                 src="https://lottie.host/9ccf026c-11e9-417a-9a9d-0169bc83e49d/sMK5FavyPC.lottie"
                 loop
                 autoplay
-                style={{ width: "100%", height: "500px" }}
+                style={{
+                  width: "100%",
+                  height: "500px",
+                  filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.1))",
+                }}
               />
             </div>
           </div>
+        </div>
+        {/***Footer Section */}
 
-          {/* FOOTER */}
-          <div className={contactStyles.footer}>
+        <div className={contactStyles.footer}>
+          <div className={contactStyles.footerBadge}>
             <MessageCircle className={contactStyles.footerIcon} />
             <span className={contactStyles.footerText}>
-              All messages are sent directly to WhatsApp for immediate response.
+              All message are sent directly to whatsapp for immediate response.
+
             </span>
           </div>
         </div>
