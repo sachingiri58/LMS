@@ -1,9 +1,16 @@
 import React from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import CoursePage from "../components/CoursePage"; // component import
 
 const Courses = () => {
   return (
     <div>
-      <h1>Courses Page</h1>
+      <Navbar />
+
+      <CoursePage />
+
+      <Footer />
     </div>
   );
 };

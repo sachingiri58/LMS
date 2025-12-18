@@ -141,7 +141,8 @@ const courses = [
     image: HC4,
     rating: 4.7,
     category: "Design",
-    price: null, // FREE COURSE
+    price: null,
+     // FREE COURSE
     isFree: true,
     overview: "Comprehensive UI/UX design course covering design principles, user research, wireframing, prototyping, and design systems. Learn industry-standard tools like Figma and build portfolio-ready design projects from concept to completion.",
     lectures: [
