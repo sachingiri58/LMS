@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { coursePageStyles, coursePageCustomStyles } from "../assets/dummyStyles";
-import courses from "../assets/dummyData";
+import coursesData from "../assets/dummyHdata"; // ← CHANGED: Use same data as CourseDetail
 import { Search, Star, StarHalf, User, X, SmilePlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast, Slide, ToastContainer } from "react-toastify";
@@ -54,7 +54,7 @@ const CoursePage = () => {
     }));
   };
 
-  const filteredCourses = courses.filter(
+  const filteredCourses = coursesData.filter( // ← CHANGED: coursesData instead of courses
     (course) =>
       course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.teacher.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -316,14 +316,14 @@ const CoursePage = () => {
         )}
       </div>
 
-<ToastContainer position="top-right"
-autoClose={3000}
-transition={Slide}
-theme="dark"
-/>
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        transition={Slide}
+        theme="dark"
+      />
 
-
-<style>{coursePageCustomStyles}</style>
+      <style>{coursePageCustomStyles}</style>
     </div>
   );
 };

@@ -7,7 +7,7 @@ import ContactPage from "./components/ContactPage";
 import Faculty from "./pages/Faculty";
 import { ArrowUp } from "lucide-react";
 import CourseDetailPageHome from "./pages/CourseDetailPageHome";
-import CourseDetailPage from "./pages/CourseDetailPage";
+import CourseDetailPage from "./pages/CourseDetailPageHome";
 
 // To protect the route 
 const ProtectedRoute = ({ children }) => {
