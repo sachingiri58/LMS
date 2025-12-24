@@ -9,22 +9,28 @@ import bookingRouter from './routes/bookingRouter.js';
 const app = express();
 const port = 4000;
 
-// middleware
-app.use(cors());
+
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174'
+  ],
+  credentials: true,
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(clerkMiddleware());
-app.use('/uploads',express.static('uploads'));
+app.use('/uploads', express.static('uploads'));
 
 
-//DB
 connectDB();
 
-// routes
-app.use('/api/course',courseRouter);
-app.use('/api/booking',bookingRouter);
 
-// start server
+app.use('/api/course', courseRouter);
+app.use('/api/booking', bookingRouter);
+
+
 app.listen(port, () => {
   console.log(`Server Started on http://localhost:${port}`);
 });
