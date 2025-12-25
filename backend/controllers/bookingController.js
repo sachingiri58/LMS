@@ -1,4 +1,4 @@
-import Booking from "../models/bookingMode.js";
+import Booking from "../models/bookingmode.js";
 import Stripe from "stripe";
 import { v4 as uuidv4 } from "uuid";
 import { getAuth } from "@clerk/express";

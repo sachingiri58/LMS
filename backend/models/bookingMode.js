@@ -5,7 +5,7 @@ const bookingModeSchema = new mongoose.Schema({
   required : true,
 unique:true,
 index:true },
-clearUserId:{
+clerkUserId:{
   type:String,
   required:true,
   index:true
@@ -19,7 +19,11 @@ course:{
   required:true
   
 },
-clearName:{
+paidAt: {
+  type: Date,
+  default: null,
+},
+courseName:{
   type:String,
   required:true
   
