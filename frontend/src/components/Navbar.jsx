@@ -9,11 +9,12 @@ import {
   Contact,
   Menu,
   X,
+  BookOpenText,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, href } from "react-router-dom";
 import { UserButton, useAuth, useUser, useClerk } from "@clerk/clerk-react";
 
-const navItems = [
+const baseNav = [
   { name: "Home", icon: Home, href: "/" },
   { name: "Courses", icon: BookOpen, href: "/courses" },
   { name: "About", icon: BookMarked, href: "/about" },
@@ -30,6 +31,10 @@ const Navbar = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
+
+  const navItems = isSignedIn
+  ? [...baseNav, { name: "My Courses", icon: BookOpenText, href: "/mycourses" }]
+  : baseNav;
 
   const menuRef = useRef(null);
 

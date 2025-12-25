@@ -3,11 +3,15 @@ import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Courses from "./pages/Courses";
-import ContactPage from "./components/ContactPage";
+import Contact from "./pages/Contact";
+
+
+
 import Faculty from "./pages/Faculty";
 import { ArrowUp } from "lucide-react";
-import CourseDetailPageHome from "./pages/CourseDetailPageHome";
 import CourseDetailPage from "./pages/CourseDetailPageHome";
+import MyCoursesPage from "./pages/MyCoursesPage";
+
 
 // To protect the route 
 const ProtectedRoute = ({ children }) => {
@@ -51,8 +55,8 @@ const ScrollTopButton = ({ threshold = 200, showOnMount = false }) => {
   if (!visible) return null;
 
   return (
-    <button 
-      onClick={scrollToTop} 
+    <button
+      onClick={scrollToTop}
       className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl cursor-pointer transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-sky-300"
     >
       <ArrowUp className="w-6 h-6 text-sky-600 drop-shadow-sm" />
@@ -67,19 +71,19 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<ContactPage />} />
+       {/**  <Route path="/contact" element={<ContactPage />} />*/}
         <Route path="/faculty" element={<Faculty />} />
+        <Route path="/contact" element={<Contact />} />
+
         <Route path="/courses" element={<Courses />} />
-        <Route path="/course/:id" element={<ProtectedRoute>
-          <CourseDetailPageHome/>
-        </ProtectedRoute>}/>
-      
+        <Route path="/mycourses" element={<MyCoursesPage />} />
 
 
-      <Route path="/courses/:id" element={<ProtectedRoute>
-          <CourseDetailPage/>
+
+        <Route path="/courses/:id" element={<ProtectedRoute>
+          <CourseDetailPage />
         </ProtectedRoute>
-      }/>
+        } />
       </Routes>
       <ScrollTopButton threshold={250} />
     </>

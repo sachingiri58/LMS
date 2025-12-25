@@ -1,3 +1,5 @@
+// assets/dummyStyles.js
+
 export const bannerStyles = {
   // Layout and container styles
   container: "relative md:pt-25 xl:pt-25 pt-21 sm:min-h-[520px] md:min-h-[560px] lg:min-h-[600px] pt-6 sm:pt-20 lg:pt-25 flex items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 py-8 bg-gradient-to-br from-blue-50 via-white to-purple-50 animate-gradient-bg rounded-3xl",
@@ -502,6 +504,7 @@ export const coursePageStyles = {
   searchIcon: "w-5 h-5 text-blue-500 group-hover:text-indigo-600 transition-colors duration-500",
   searchInput: "w-full pl-12 pr-10 py-3 rounded-3xl bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-0 font-medium text-sm sm:text-base",
   clearButton: "absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-red-500 transition-colors duration-300",
+  
   // Results count
   resultsCount: "text-gray-600 text-sm sm:text-base",
   
