@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { addPageStyles } from "../assets/dummyStyles";
-import { useNavigate } from "react-router-dom"; 
-import {toast,Toaster} from 'react-hot-toast';
-import { BadgeIndianRupee, BookOpenText, ChevronUp,  ChevronDown, Clock, ImageIcon, ListOrdered, PenLine, Plus, Star, Upload, UserPen, Video, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast, Toaster } from 'react-hot-toast';
+import { BadgeIndianRupee, BookOpenText, ChevronUp, ChevronDown, Clock, ImageIcon, ListOrdered, PenLine, Plus, Star, Upload, UserPen, Video, X } from "lucide-react";
 
 const API_BASE = "http://localhost:4000";
 
@@ -60,7 +60,7 @@ const computeCourseTotals = (lectures = []) => {
       lectureTotalMinutes = Math.max(
         0,
         (Number(lec.duration.hours) || 0) * 60 +
-          (Number(lec.duration.minutes) || 0)
+        (Number(lec.duration.minutes) || 0)
       );
     }
 
@@ -94,215 +94,215 @@ const computeCourseTotals = (lectures = []) => {
 
 
 const AppPage = () => {
-  
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-      name: "",
-      teacher: "",
-      image: null,
-      rating: 0,
-      pricingType: "free",
-      price: { original: "", sale: "" },
-      overview: "",
-      totalDuration: { hours: "", minutes: "" },
-      totalLectures: "",
-      lectures: [],
-      courseType: "regular",
-    });
-  
-    const [currentLecture, setCurrentLecture] = useState({
-      title: "",
-      duration: { hours: "", minutes: "" },
-      chapters: [],
-    });
-  
-    const [currentChapter, setCurrentChapter] = useState({
-      name: "",
-      topic: "",
-      duration: { hours: "", minutes: "" },
-      videoUrl: "",
-    });
 
-    const [showLectureForm, setShowLectureForm] = useState(false);
-    const [showChapterForm, setShowChapterForm] = useState(false);
-    const [expandedLectures, setExpandedLectures] = useState([]);
-    const [selectedLectureIndex, setSelectedLectureIndex] = useState(null);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    teacher: "",
+    image: null,
+    rating: 0,
+    pricingType: "free",
+    price: { original: "", sale: "" },
+    overview: "",
+    totalDuration: { hours: "", minutes: "" },
+    totalLectures: "",
+    lectures: [],
+    courseType: "regular",
+  });
 
-//to toggle the lectures
-const toggleLecture = (index) =>
+  const [currentLecture, setCurrentLecture] = useState({
+    title: "",
+    duration: { hours: "", minutes: "" },
+    chapters: [],
+  });
+
+  const [currentChapter, setCurrentChapter] = useState({
+    name: "",
+    topic: "",
+    duration: { hours: "", minutes: "" },
+    videoUrl: "",
+  });
+
+  const [showLectureForm, setShowLectureForm] = useState(false);
+  const [showChapterForm, setShowChapterForm] = useState(false);
+  const [expandedLectures, setExpandedLectures] = useState([]);
+  const [selectedLectureIndex, setSelectedLectureIndex] = useState(null);
+
+  //to toggle the lectures
+  const toggleLecture = (index) =>
     setExpandedLectures((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
 
-    const handleInputChange = (e) => {
-      const { name, value } = e.target;
-      if (name.includes("price.")) {
-        const priceField = name.split(".")[1];
-        setFormData((prev) => ({
-          ...prev,
-          price: { ...prev.price, [priceField]: value },
-        }));
-      } else if (name.includes("totalDuration.")) {
-        const durationField = name.split(".")[1];
-        setFormData((prev) => ({
-          ...prev,
-          totalDuration: { ...prev.totalDuration, [durationField]: value },
-        }));
-      } else if (name === "totalLectures") {
-        setFormData((prev) => ({ ...prev, totalLectures: value }));
-      } else {
-        setFormData((prev) => ({ ...prev, [name]: value }));
-      }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes("price.")) {
+      const priceField = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        price: { ...prev.price, [priceField]: value },
+      }));
+    } else if (name.includes("totalDuration.")) {
+      const durationField = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        totalDuration: { ...prev.totalDuration, [durationField]: value },
+      }));
+    } else if (name === "totalLectures") {
+      setFormData((prev) => ({ ...prev, totalLectures: value }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleCourseTypeChange = (type) => {
+    setFormData((prev) => ({ ...prev, courseType: type }));
+    toast.success(
+      type === "top"
+        ? "Course set as Top Course!"
+        : "Course set as Regular Course!"
+    );
+  };
+
+  // for image handle
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload a valid image file");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setFormData((prev) => ({
+        ...prev,
+        image: { file, preview: ev.target.result },
+      }));
+      toast.success("Image uploaded successfully!");
     };
+    reader.readAsDataURL(file);
+  };
 
-    const handleCourseTypeChange = (type) => {
-      setFormData((prev) => ({ ...prev, courseType: type }));
-      toast.success(
-        type === "top"
-          ? "Course set as Top Course!"
-          : "Course set as Regular Course!"
-      );
-    };
-
-    // for image handle
-    const handleImageUpload = (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please upload a valid image file");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setFormData((prev) => ({
-          ...prev,
-          image: { file, preview: ev.target.result },
-        }));
-        toast.success("Image uploaded successfully!");
-      };
-      reader.readAsDataURL(file);
-    };
-  
-    const handleRatingChange = (rating) =>
-      setFormData((prev) => ({ ...prev, rating }));
+  const handleRatingChange = (rating) =>
+    setFormData((prev) => ({ ...prev, rating }));
 
 
-      //to change the lecture
-      const handleLectureChange = (e) => {
-        const { name, value } = e.target;
-        if (name.includes("duration.")) {
-          const durationField = name.split(".")[1];
-          setCurrentLecture((prev) => ({
-            ...prev,
-            duration: { ...prev.duration, [durationField]: value },
-          }));
-        } else {
-          setCurrentLecture((prev) => ({ ...prev, [name]: value }));
-        }
-      };
-    
-      const handleChapterChange = (e) => {
-        const { name, value } = e.target;
-        if (name.includes("duration.")) {
-          const durationField = name.split(".")[1];
-          setCurrentChapter((prev) => ({
-            ...prev,
-            duration: { ...prev.duration, [durationField]: value },
-          }));
-        } else {
-          setCurrentChapter((prev) => ({ ...prev, [name]: value }));
-        }
-      };
+  //to change the lecture
+  const handleLectureChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes("duration.")) {
+      const durationField = name.split(".")[1];
+      setCurrentLecture((prev) => ({
+        ...prev,
+        duration: { ...prev.duration, [durationField]: value },
+      }));
+    } else {
+      setCurrentLecture((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleChapterChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes("duration.")) {
+      const durationField = name.split(".")[1];
+      setCurrentChapter((prev) => ({
+        ...prev,
+        duration: { ...prev.duration, [durationField]: value },
+      }));
+    } else {
+      setCurrentChapter((prev) => ({ ...prev, [name]: value }));
+    }
+  };
 
 
 
-      //to calculat the total minutes and duration + total lecture count 
-    
-      const calculateTotalMinutes = (hours, minutes) =>
-      (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0);
-  
-    const calculateTotalCourseDuration = () => {
-      const { totalDuration } = computeCourseTotals(formData.lectures);
-      return formatDuration(totalDuration);
-    };
-  
-    const calculateTotalLectures = () => formData.lectures.length;
-  
-    const formatTotalDuration = () => formatDuration(formData.totalDuration);
+  //to calculat the total minutes and duration + total lecture count 
+
+  const calculateTotalMinutes = (hours, minutes) =>
+    (parseInt(hours) || 0) * 60 + (parseInt(minutes) || 0);
+
+  const calculateTotalCourseDuration = () => {
+    const { totalDuration } = computeCourseTotals(formData.lectures);
+    return formatDuration(totalDuration);
+  };
+
+  const calculateTotalLectures = () => formData.lectures.length;
+
+  const formatTotalDuration = () => formatDuration(formData.totalDuration);
 
 
-    //validate each form fill 
+  //validate each form fill 
 
-    const validateForm = () => {
-      if (!formData.name?.trim()) {
-        toast.error("Please enter course name");
+  const validateForm = () => {
+    if (!formData.name?.trim()) {
+      toast.error("Please enter course name");
+      return false;
+    }
+    if (!formData.teacher?.trim()) {
+      toast.error("Please enter instructor name");
+      return false;
+    }
+    if (!formData.image?.file) {
+      toast.error("Please upload a course image");
+      return false;
+    }
+    if (!formData.overview?.trim()) {
+      toast.error("Please enter course overview");
+      return false;
+    }
+    if (!formData.totalLectures || Number(formData.totalLectures) <= 0) {
+      toast.error("Please enter valid total lectures count");
+      return false;
+    }
+    if (!formData.totalDuration.hours && !formData.totalDuration.minutes) {
+      toast.error("Please enter total duration");
+      return false;
+    }
+    if (formData.pricingType === "paid") {
+      if (
+        !formData.price.original ||
+        parseFloat(formData.price.original) <= 0
+      ) {
+        toast.error("Please enter valid original price for paid course");
         return false;
       }
-      if (!formData.teacher?.trim()) {
-        toast.error("Please enter instructor name");
+      if (!formData.price.sale || parseFloat(formData.price.sale) <= 0) {
+        toast.error("Please enter valid sale price for paid course");
         return false;
       }
-      if (!formData.image?.file) {
-        toast.error("Please upload a course image");
+      if (
+        parseFloat(formData.price.sale) >= parseFloat(formData.price.original)
+      ) {
+        toast.error("Sale price should be less than original price");
         return false;
       }
-      if (!formData.overview?.trim()) {
-        toast.error("Please enter course overview");
+    }
+    if (formData.lectures.length === 0) {
+      toast.error("Please add at least one lecture");
+      return false;
+    }
+    for (let i = 0; i < formData.lectures.length; i++) {
+      const lecture = formData.lectures[i];
+      if (!lecture.title?.trim()) {
+        toast.error(`Lecture ${i + 1} has no title`);
         return false;
       }
-      if (!formData.totalLectures || Number(formData.totalLectures) <= 0) {
-        toast.error("Please enter valid total lectures count");
+      // if lecture has no chapters, ensure lecture.duration is provided
+      if (
+        (lecture.chapters?.length || 0) === 0 &&
+        !lecture.duration.hours &&
+        !lecture.duration.minutes
+      ) {
+        toast.error(`Lecture ${i + 1} has no duration`);
         return false;
       }
-      if (!formData.totalDuration.hours && !formData.totalDuration.minutes) {
-        toast.error("Please enter total duration");
-        return false;
-      }
-      if (formData.pricingType === "paid") {
-        if (
-          !formData.price.original ||
-          parseFloat(formData.price.original) <= 0
-        ) {
-          toast.error("Please enter valid original price for paid course");
-          return false;
-        }
-        if (!formData.price.sale || parseFloat(formData.price.sale) <= 0) {
-          toast.error("Please enter valid sale price for paid course");
-          return false;
-        }
-        if (
-          parseFloat(formData.price.sale) >= parseFloat(formData.price.original)
-        ) {
-          toast.error("Sale price should be less than original price");
-          return false;
-        }
-      }
-      if (formData.lectures.length === 0) {
-        toast.error("Please add at least one lecture");
-        return false;
-      }
-      for (let i = 0; i < formData.lectures.length; i++) {
-        const lecture = formData.lectures[i];
-        if (!lecture.title?.trim()) {
-          toast.error(`Lecture ${i + 1} has no title`);
-          return false;
-        }
-        // if lecture has no chapters, ensure lecture.duration is provided
-        if (
-          (lecture.chapters?.length || 0) === 0 &&
-          !lecture.duration.hours &&
-          !lecture.duration.minutes
-        ) {
-          toast.error(`Lecture ${i + 1} has no duration`);
-          return false;
-        }
-      }
-      return true;
-    };// if filled then ok else if will show an error toast 
+    }
+    return true;
+  };// if filled then ok else if will show an error toast 
 
-    
-    // Add lecture: allow lecture with chapters (duration optional if chapters exist)
+
+  // Add lecture: allow lecture with chapters (duration optional if chapters exist)
   const addLecture = () => {
     if (!currentLecture.title?.trim()) {
       toast.error("Please enter lecture title");
@@ -431,7 +431,7 @@ const toggleLecture = (index) =>
     setShowChapterForm(false);
     setSelectedLectureIndex(null);
   };
-  
+
   //similarly to lecture first validate the input fields then if ok create a lecture
 
   //add a chapter, remove the lecture or remove a chapter function 
@@ -544,7 +544,7 @@ const toggleLecture = (index) =>
             <Star className={addPageStyles.starEmpty} size={28} />
           )}
 
-          
+
         </button>
       ))}
     </div>
@@ -557,470 +557,670 @@ const toggleLecture = (index) =>
 
   return (
     <div className={addPageStyles.pageContainer}>
-      <Toaster position="top-right" toastOptions={{duration:3000}}/>
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
 
       <div className={addPageStyles.contentContainer}>
         <div className={addPageStyles.headerContainer}>
           <div className={addPageStyles.headerGradient}>
-          <div className={addPageStyles.headerGlow}>
-        <h1 className={addPageStyles.headerTitle}>  Create New Course </h1>
+            <div className={addPageStyles.headerGlow}>
+              <h1 className={addPageStyles.headerTitle}>  Create New Course </h1>
 
-          
-          </div>
-          <p className={addPageStyles.headerSubtitle}>
-            Craft an exceptional learning experience with out infutive course creation platform 
-          </p>
-        </div>
 
-        {/**form section  */} 
-
-        
-        <form onSubmit={handleSubmit} className={addPageStyles.form}>
-          {/* Course Type */}
-          <div
-            className={`${addPageStyles.card} ${addPageStyles.courseTypeCard}`}
-          >
-            <div className={addPageStyles.cardHeader}>
-              <div className={addPageStyles.cardIconContainer}>
-                <BookOpenText className={addPageStyles.cardIcon} size={20} />
-              </div>
-              <div>
-                <h2 className={addPageStyles.cardTitle}>Course Type</h2>
-                <p className={addPageStyles.cardSubtitle}>
-                  Select the type of course you want to create
-                </p>
-              </div>
             </div>
-
-            <div className={addPageStyles.courseTypeGrid}>
-              <label
-                htmlFor="top"
-                className={addPageStyles.courseTypeLabel(
-                  formData.courseType === "top",
-                  "top"
-                )}
-              >
-                <input
-                  type="radio"
-                  id="top"
-                  name="courseType"
-                  value="top"
-                  checked={formData.courseType === "top"}
-                  onChange={() => handleCourseTypeChange("top")}
-                  className={`${addPageStyles.courseTypeInput} text-orange-500`}
-                />
-                <div>
-                  <h3 className={addPageStyles.courseTypeText}>Top Course</h3>
-                </div>
-              </label>
-
-              <label
-                htmlFor="regular"
-                className={addPageStyles.courseTypeLabel(
-                  formData.courseType === "regular",
-                  "regular"
-                )}
-              >
-                <input
-                  type="radio"
-                  id="regular"
-                  name="courseType"
-                  value="regular"
-                  checked={formData.courseType === "regular"}
-                  onChange={() => handleCourseTypeChange("regular")}
-                  className={`${addPageStyles.courseTypeInput} text-blue-500`}
-                />
-                <div>
-                  <h3 className={addPageStyles.courseTypeText}>
-                    Regular Course
-                  </h3>
-                </div>
-              </label>
-            </div>
+            <p className={addPageStyles.headerSubtitle}>
+              Craft an exceptional learning experience with out infutive course creation platform
+            </p>
           </div>
 
-          {/* Basic Info */}
-          <div
-            className={`${addPageStyles.card} ${addPageStyles.courseInfoCard}`}
-          >
-            <div className={addPageStyles.cardHeader}>
-              <div className={addPageStyles.cardIconContainer}>
-                <BookOpenText className={addPageStyles.cardIcon} size={20} />
+          {/**form section  */}
+
+
+          <form onSubmit={handleSubmit} className={addPageStyles.form}>
+            {/* Course Type */}
+            <div
+              className={`${addPageStyles.card} ${addPageStyles.courseTypeCard}`}
+            >
+              <div className={addPageStyles.cardHeader}>
+                <div className={addPageStyles.cardIconContainer}>
+                  <BookOpenText className={addPageStyles.cardIcon} size={20} />
+                </div>
+                <div>
+                  <h2 className={addPageStyles.cardTitle}>Course Type</h2>
+                  <p className={addPageStyles.cardSubtitle}>
+                    Select the type of course you want to create
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className={addPageStyles.cardTitle}>Course Information</h2>
-                <p className={addPageStyles.cardSubtitle}>
-                  Basic details about your course
-                </p>
+
+              <div className={addPageStyles.courseTypeGrid}>
+                <label
+                  htmlFor="top"
+                  className={addPageStyles.courseTypeLabel(
+                    formData.courseType === "top",
+                    "top"
+                  )}
+                >
+                  <input
+                    type="radio"
+                    id="top"
+                    name="courseType"
+                    value="top"
+                    checked={formData.courseType === "top"}
+                    onChange={() => handleCourseTypeChange("top")}
+                    className={`${addPageStyles.courseTypeInput} text-orange-500`}
+                  />
+                  <div>
+                    <h3 className={addPageStyles.courseTypeText}>Top Course</h3>
+                  </div>
+                </label>
+
+                <label
+                  htmlFor="regular"
+                  className={addPageStyles.courseTypeLabel(
+                    formData.courseType === "regular",
+                    "regular"
+                  )}
+                >
+                  <input
+                    type="radio"
+                    id="regular"
+                    name="courseType"
+                    value="regular"
+                    checked={formData.courseType === "regular"}
+                    onChange={() => handleCourseTypeChange("regular")}
+                    className={`${addPageStyles.courseTypeInput} text-blue-500`}
+                  />
+                  <div>
+                    <h3 className={addPageStyles.courseTypeText}>
+                      Regular Course
+                    </h3>
+                  </div>
+                </label>
               </div>
             </div>
 
-            <div className={addPageStyles.formGrid}>
-              <div className={addPageStyles.inputContainer}>
-                <label className={addPageStyles.inputLabel}>
-                  <PenLine size={16} className={addPageStyles.inputIcon} />{" "}
-                  Course Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className={addPageStyles.input}
-                  placeholder="e.g., React Masterclass"
-                  required
-                />
+            {/* Basic Info */}
+            <div
+              className={`${addPageStyles.card} ${addPageStyles.courseInfoCard}`}
+            >
+              <div className={addPageStyles.cardHeader}>
+                <div className={addPageStyles.cardIconContainer}>
+                  <BookOpenText className={addPageStyles.cardIcon} size={20} />
+                </div>
+                <div>
+                  <h2 className={addPageStyles.cardTitle}>Course Information</h2>
+                  <p className={addPageStyles.cardSubtitle}>
+                    Basic details about your course
+                  </p>
+                </div>
               </div>
 
-              <div className={addPageStyles.inputContainer}>
-                <label className={addPageStyles.inputLabel}>
-                  <UserPen size={16} className={addPageStyles.inputIcon} />{" "}
-                  Instructor Name *
-                </label>
-                <input
-                  type="text"
-                  name="teacher"
-                  value={formData.teacher}
-                  onChange={handleInputChange}
-                  className={addPageStyles.input}
-                  placeholder="e.g., Sophia Miller"
-                  required
-                />
-              </div>
+              <div className={addPageStyles.formGrid}>
+                <div className={addPageStyles.inputContainer}>
+                  <label className={addPageStyles.inputLabel}>
+                    <PenLine size={16} className={addPageStyles.inputIcon} />{" "}
+                    Course Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className={addPageStyles.input}
+                    placeholder="e.g., React Masterclass"
+                    required
+                  />
+                </div>
 
-              <div className={addPageStyles.inputContainer}>
-                <label className={addPageStyles.inputLabel}>
-                  <Star size={16} className={addPageStyles.inputIcon} /> Course
-                  Rating
-                </label>
-                <div className="p-2 sm:p-3 bg-white border-2 border-gray-200 rounded-full shadow-sm">
-                  <StarRating
-                    rating={formData.rating}
-                    onRatingChange={handleRatingChange}
+                <div className={addPageStyles.inputContainer}>
+                  <label className={addPageStyles.inputLabel}>
+                    <UserPen size={16} className={addPageStyles.inputIcon} />{" "}
+                    Instructor Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="teacher"
+                    value={formData.teacher}
+                    onChange={handleInputChange}
+                    className={addPageStyles.input}
+                    placeholder="e.g., Sophia Miller"
+                    required
+                  />
+                </div>
+
+                <div className={addPageStyles.inputContainer}>
+                  <label className={addPageStyles.inputLabel}>
+                    <Star size={16} className={addPageStyles.inputIcon} /> Course
+                    Rating
+                  </label>
+                  <div className="p-2 sm:p-3 bg-white border-2 border-gray-200 rounded-full shadow-sm">
+                    <StarRating
+                      rating={formData.rating}
+                      onRatingChange={handleRatingChange}
+                    />
+                  </div>
+                </div>
+
+                <div className={addPageStyles.inputContainer}>
+                  <label className={addPageStyles.inputLabel}>
+                    <Clock size={16} className={addPageStyles.inputIcon} /> Total
+                    Duration *
+                  </label>
+                  <div className={addPageStyles.durationGrid}>
+                    <div>
+                      <input
+                        type="number"
+                        name="totalDuration.hours"
+                        value={formData.totalDuration.hours}
+                        onChange={handleInputChange}
+                        placeholder="Hours"
+                        min="0"
+                        className={addPageStyles.input}
+                      />
+                      <span className={addPageStyles.durationHelper}>Hours</span>
+                    </div>
+                    <div>
+                      <input
+                        type="number"
+                        name="totalDuration.minutes"
+                        value={formData.totalDuration.minutes}
+                        onChange={handleInputChange}
+                        placeholder="Minutes"
+                        min="0"
+                        max="59"
+                        className={addPageStyles.input}
+                      />
+                      <span className={addPageStyles.durationHelper}>
+                        Minutes
+                      </span>
+                    </div>
+                  </div>
+                  {(formData.totalDuration.hours ||
+                    formData.totalDuration.minutes) && (
+                      <p className={addPageStyles.durationFormatted}>
+                        Formatted: {formatTotalDuration()}
+                      </p>
+                    )}
+                </div>
+
+                <div className={addPageStyles.inputContainer}>
+                  <label className={addPageStyles.inputLabel}>
+                    <ListOrdered size={16} className={addPageStyles.inputIcon} />{" "}
+                    Total Lectures *
+                  </label>
+                  <input
+                    type="number"
+                    name="totalLectures"
+                    value={formData.totalLectures}
+                    onChange={handleInputChange}
+                    min="1"
+                    className={addPageStyles.input}
+                    placeholder="Enter total number of lectures"
+                    required
+                  />
+                </div>
+
+                <div className={addPageStyles.inputContainer}>
+                  <label className={addPageStyles.inputLabel}>
+                    <BadgeIndianRupee
+                      size={16}
+                      className={addPageStyles.inputIcon}
+                    />{" "}
+                    Course Type *
+                  </label>
+                  <select
+                    name="pricingType"
+                    value={formData.pricingType}
+                    onChange={handleInputChange}
+                    className={addPageStyles.select}
+                  >
+                    <option value="free">Free Course</option>
+                    <option value="paid">Paid Course</option>
+                  </select>
+                </div>
+
+                {formData.pricingType === "paid" && (
+                  <>
+                    <div className={addPageStyles.inputContainer}>
+                      <label className={addPageStyles.inputLabel}>
+                        <BadgeIndianRupee
+                          size={16}
+                          className={addPageStyles.inputIcon}
+                        />{" "}
+                        Original Price *
+                      </label>
+                      <input
+                        type="number"
+                        name="price.original"
+                        value={formData.price.original}
+                        onChange={handleInputChange}
+                        min="1"
+                        step="0.01"
+                        className={addPageStyles.input}
+                        placeholder="200"
+                        required={formData.pricingType === "paid"}
+                      />
+                    </div>
+                    <div className={addPageStyles.inputContainer}>
+                      <label className={addPageStyles.inputLabel}>
+                        <BadgeIndianRupee
+                          size={16}
+                          className={addPageStyles.inputIcon}
+                        />{" "}
+                        Sale Price *
+                      </label>
+                      <input
+                        type="number"
+                        name="price.sale"
+                        value={formData.price.sale}
+                        onChange={handleInputChange}
+                        min="1"
+                        step="0.01"
+                        className={addPageStyles.input}
+                        placeholder="99"
+                        required={formData.pricingType === "paid"}
+                      />
+                    </div>
+                  </>
+                )}
+
+                <div className={addPageStyles.formFullWidth}>
+                  <label className={addPageStyles.inputLabel}>
+                    <ImageIcon size={16} className={addPageStyles.inputIcon} />{" "}
+                    Course Image *
+                  </label>
+                  <div className={addPageStyles.uploadContainer}>
+                    <label className={addPageStyles.uploadLabel}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className={addPageStyles.uploadInput}
+                        required
+                      />
+                      <div className={addPageStyles.uploadBox}>
+                        <Upload size={18} className={addPageStyles.uploadIcon} />
+                        <span className="font-medium text-center sm:text-left">
+                          {formData.image
+                            ? "Change Image"
+                            : "Upload Course Image"}
+                        </span>
+                      </div>
+                    </label>
+                    {formData.image && (
+                      <div className={addPageStyles.imagePreview}>
+                        <img
+                          src={formData.image.preview}
+                          alt="Course preview"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className={addPageStyles.formFullWidth}>
+                  <label className={addPageStyles.inputLabel}>
+                    <BookOpenText size={16} className={addPageStyles.inputIcon} />{" "}
+                    Course Overview *
+                  </label>
+                  <textarea
+                    name="overview"
+                    value={formData.overview}
+                    onChange={handleInputChange}
+                    rows="4"
+                    className={addPageStyles.textarea}
+                    placeholder="Describe what students will learn..."
+                    required
                   />
                 </div>
               </div>
+            </div>
 
-              <div className={addPageStyles.inputContainer}>
-                <label className={addPageStyles.inputLabel}>
-                  <Clock size={16} className={addPageStyles.inputIcon} /> Total
-                  Duration *
-                </label>
-                <div className={addPageStyles.durationGrid}>
-                  <div>
-                    <input
-                      type="number"
-                      name="totalDuration.hours"
-                      value={formData.totalDuration.hours}
-                      onChange={handleInputChange}
-                      placeholder="Hours"
-                      min="0"
-                      className={addPageStyles.input}
-                    />
-                    <span className={addPageStyles.durationHelper}>Hours</span>
+            {/* Lectures */}
+            <div
+              className={`${addPageStyles.card} ${addPageStyles.lecturesCard}`}
+            >
+              <div className={addPageStyles.lecturesHeader}>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className={addPageStyles.cardIconContainer}>
+                    <Video className={addPageStyles.cardIcon} size={20} />
                   </div>
                   <div>
-                    <input
-                      type="number"
-                      name="totalDuration.minutes"
-                      value={formData.totalDuration.minutes}
-                      onChange={handleInputChange}
-                      placeholder="Minutes"
-                      min="0"
-                      max="59"
-                      className={addPageStyles.input}
-                    />
-                    <span className={addPageStyles.durationHelper}>
-                      Minutes
-                    </span>
+                    <h2 className={addPageStyles.cardTitle}>Course Content</h2>
+                    {formData.lectures.length > 0 ? (
+                      <p className={addPageStyles.cardSubtitle}>
+                        {calculateTotalLectures()} lectures •{" "}
+                        {calculateTotalCourseDuration()} total duration
+                      </p>
+                    ) : (
+                      <p className={addPageStyles.cardSubtitle}>
+                        Add lectures and chapters to structure your course
+                      </p>
+                    )}
                   </div>
                 </div>
-                {(formData.totalDuration.hours ||
-                  formData.totalDuration.minutes) && (
-                  <p className={addPageStyles.durationFormatted}>
-                    Formatted: {formatTotalDuration()}
-                  </p>
-                )}
-              </div>
-
-              <div className={addPageStyles.inputContainer}>
-                <label className={addPageStyles.inputLabel}>
-                  <ListOrdered size={16} className={addPageStyles.inputIcon} />{" "}
-                  Total Lectures *
-                </label>
-                <input
-                  type="number"
-                  name="totalLectures"
-                  value={formData.totalLectures}
-                  onChange={handleInputChange}
-                  min="1"
-                  className={addPageStyles.input}
-                  placeholder="Enter total number of lectures"
-                  required
-                />
-              </div>
-
-              <div className={addPageStyles.inputContainer}>
-                <label className={addPageStyles.inputLabel}>
-                  <BadgeIndianRupee
-                    size={16}
-                    className={addPageStyles.inputIcon}
-                  />{" "}
-                  Course Type *
-                </label>
-                <select
-                  name="pricingType"
-                  value={formData.pricingType}
-                  onChange={handleInputChange}
-                  className={addPageStyles.select}
+                <button
+                  type="button"
+                  onClick={() => setShowLectureForm(true)}
+                  className={addPageStyles.addLectureButton}
                 >
-                  <option value="free">Free Course</option>
-                  <option value="paid">Paid Course</option>
-                </select>
+                  <Plus size={16} /> Add Lecture
+                </button>
               </div>
 
-              {formData.pricingType === "paid" && (
-                <>
-                  <div className={addPageStyles.inputContainer}>
-                    <label className={addPageStyles.inputLabel}>
-                      <BadgeIndianRupee
-                        size={16}
-                        className={addPageStyles.inputIcon}
-                      />{" "}
-                      Original Price *
-                    </label>
-                    <input
-                      type="number"
-                      name="price.original"
-                      value={formData.price.original}
-                      onChange={handleInputChange}
-                      min="1"
-                      step="0.01"
-                      className={addPageStyles.input}
-                      placeholder="200"
-                      required={formData.pricingType === "paid"}
-                    />
-                  </div>
-                  <div className={addPageStyles.inputContainer}>
-                    <label className={addPageStyles.inputLabel}>
-                      <BadgeIndianRupee
-                        size={16}
-                        className={addPageStyles.inputIcon}
-                      />{" "}
-                      Sale Price *
-                    </label>
-                    <input
-                      type="number"
-                      name="price.sale"
-                      value={formData.price.sale}
-                      onChange={handleInputChange}
-                      min="1"
-                      step="0.01"
-                      className={addPageStyles.input}
-                      placeholder="99"
-                      required={formData.pricingType === "paid"}
-                    />
-                  </div>
-                </>
-              )}
-
-              <div className={addPageStyles.formFullWidth}>
-                <label className={addPageStyles.inputLabel}>
-                  <ImageIcon size={16} className={addPageStyles.inputIcon} />{" "}
-                  Course Image *
-                </label>
-                <div className={addPageStyles.uploadContainer}>
-                  <label className={addPageStyles.uploadLabel}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className={addPageStyles.uploadInput}
-                      required
-                    />
-                    <div className={addPageStyles.uploadBox}>
-                      <Upload size={18} className={addPageStyles.uploadIcon} />
-                      <span className="font-medium text-center sm:text-left">
-                        {formData.image
-                          ? "Change Image"
-                          : "Upload Course Image"}
-                      </span>
+              <div className={addPageStyles.lecturesList}>
+                {formData.lectures.map((lecture, lectureIndex) => (
+                  <div key={lecture.id} className={addPageStyles.lectureCard}>
+                    <div className={addPageStyles.lectureHeader}>
+                      <div className={addPageStyles.lectureContent}>
+                        <button
+                          onClick={() => toggleLecture(lectureIndex)}
+                          className={addPageStyles.lectureToggleButton}
+                        >
+                          {expandedLectures.includes(lectureIndex) ? (
+                            <ChevronUp size={16} />
+                          ) : (
+                            <ChevronDown size={16} />
+                          )}
+                        </button>
+                        <div className={addPageStyles.lectureInfo}>
+                          <h3 className={addPageStyles.lectureTitle}>
+                            {lecture.title}
+                          </h3>
+                          <p className={addPageStyles.lectureMeta}>
+                            <Clock size={14} /> {formatDuration(lecture.duration)}
+                            {lecture.chapters?.length > 0 &&
+                              ` • ${lecture.chapters.length} chapters`}
+                          </p>
+                        </div>
+                      </div>
+                      <div className={addPageStyles.lectureActions}>
+                        <button
+                          type="button"
+                          onClick={() => openAddChapter(lectureIndex)}
+                          className={addPageStyles.addChapterButton}
+                        >
+                          <Plus size={14} /> Add Chapter
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeLecture(lectureIndex)}
+                          className={addPageStyles.deleteButton}
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
                     </div>
-                  </label>
-                  {formData.image && (
-                    <div className={addPageStyles.imagePreview}>
-                      <img
-                        src={formData.image.preview}
-                        alt="Course preview"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              <div className={addPageStyles.formFullWidth}>
-                <label className={addPageStyles.inputLabel}>
-                  <BookOpenText size={16} className={addPageStyles.inputIcon} />{" "}
-                  Course Overview *
-                </label>
-                <textarea
-                  name="overview"
-                  value={formData.overview}
-                  onChange={handleInputChange}
-                  rows="4"
-                  className={addPageStyles.textarea}
-                  placeholder="Describe what students will learn..."
-                  required
-                />
+                    {expandedLectures.includes(lectureIndex) &&
+                      lecture.chapters?.length > 0 && (
+                        <div className={addPageStyles.chaptersContainer(true)}>
+                          {lecture.chapters.map((chapter, chapterIndex) => (
+                            <div
+                              key={chapter.id}
+                              className={addPageStyles.chapterCard}
+                            >
+                              <div className={addPageStyles.chapterContent}>
+                                <div className={addPageStyles.chapterInfo}>
+                                  <h4 className={addPageStyles.chapterTitle}>
+                                    {chapter.name}
+                                  </h4>
+                                  <p className={addPageStyles.chapterTopic}>
+                                    {chapter.topic}
+                                  </p>
+                                  <div className={addPageStyles.chapterMeta}>
+                                    <span
+                                      className={addPageStyles.chapterDuration}
+                                    >
+                                      <Clock size={12} />{" "}
+                                      {formatDuration(chapter.duration)}
+                                    </span>
+                                    <p className={addPageStyles.chapterUrl}>
+                                      {chapter.videoUrl}
+                                    </p>
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    removeChapter(lectureIndex, chapterIndex)
+                                  }
+                                  className={addPageStyles.chapterDeleteButton}
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
 
-          {/* Lectures */}
-          <div
-            className={`${addPageStyles.card} ${addPageStyles.lecturesCard}`}
-          >
-            <div className={addPageStyles.lecturesHeader}>
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className={addPageStyles.cardIconContainer}>
-                  <Video className={addPageStyles.cardIcon} size={20} />
-                </div>
-                <div>
-                  <h2 className={addPageStyles.cardTitle}>Course Content</h2>
-                  {formData.lectures.length > 0 ? (
-                    <p className={addPageStyles.cardSubtitle}>
-                      {calculateTotalLectures()} lectures •{" "}
-                      {calculateTotalCourseDuration()} total duration
-                    </p>
-                  ) : (
-                    <p className={addPageStyles.cardSubtitle}>
-                      Add lectures and chapters to structure your course
-                    </p>
-                  )}
-                </div>
-              </div>
+            {/* Submit */}
+            <div className={addPageStyles.submitContainer}>
               <button
-                type="button"
-                onClick={() => setShowLectureForm(true)}
-                className={addPageStyles.addLectureButton}
+                type="submit"
+                className={addPageStyles.submitButton}
+                disabled={loading}
               >
-                <Plus size={16} /> Add Lecture
+                <div className="absolute inset-0 bg-linear-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                {loading
+                  ? "Creating..."
+                  : `Create ${formData.courseType === "top" ? "Top" : "Regular"
+                  } Course`}
               </button>
             </div>
+          </form>
 
-            <div className={addPageStyles.lecturesList}>
-              {formData.lectures.map((lecture, lectureIndex) => (
-                <div key={lecture.id} className={addPageStyles.lectureCard}>
-                  <div className={addPageStyles.lectureHeader}>
-                    <div className={addPageStyles.lectureContent}>
-                      <button
-                        onClick={() => toggleLecture(lectureIndex)}
-                        className={addPageStyles.lectureToggleButton}
-                      >
-                        {expandedLectures.includes(lectureIndex) ? (
-                          <ChevronUp size={16} />
-                        ) : (
-                          <ChevronDown size={16} />
-                        )}
-                      </button>
-                      <div className={addPageStyles.lectureInfo}>
-                        <h3 className={addPageStyles.lectureTitle}>
-                          {lecture.title}
-                        </h3>
-                        <p className={addPageStyles.lectureMeta}>
-                          <Clock size={14} /> {formatDuration(lecture.duration)}
-                          {lecture.chapters?.length > 0 &&
-                            ` • ${lecture.chapters.length} chapters`}
-                        </p>
+
+
+          {/* Chapter Modal */}
+          {showChapterForm && (
+            <div className={addPageStyles.modalOverlay}>
+              <div className={addPageStyles.modal}>
+                <div className={addPageStyles.modalHeader}>
+                  <div
+                    className={addPageStyles.modalIconContainer("bg-green-100")}
+                  >
+                    <Plus className="text-green-600" size={20} />
+                  </div>
+                  <h3 className={addPageStyles.modalTitle}>
+                    {selectedLectureIndex !== null
+                      ? "Add Chapter to Lecture"
+                      : "Add Chapter to Current Lecture"}
+                  </h3>
+                </div>
+                <div className={addPageStyles.modalContent}>
+                  <div>
+                    <label className={addPageStyles.inputLabel}>
+                      Chapter Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={currentChapter.name}
+                      onChange={handleChapterChange}
+                      placeholder="e.g., Course Introduction"
+                      className={addPageStyles.textarea}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={addPageStyles.inputLabel}>Topic *</label>
+                    <input
+                      type="text"
+                      name="topic"
+                      value={currentChapter.topic}
+                      onChange={handleChapterChange}
+                      placeholder="e.g., What we'll build"
+                      className={addPageStyles.textarea}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={addPageStyles.inputLabel}>Duration *</label>
+                    <div className={addPageStyles.durationGrid}>
+                      <div>
+                        <input
+                          type="number"
+                          name="duration.hours"
+                          value={currentChapter.duration.hours}
+                          onChange={handleLectureChange}
+                          placeholder="Hours"
+                          min="0"
+                          className={addPageStyles.textarea}
+                        />
+                        <span className={addPageStyles.durationHelper}>
+                          Hours
+                        </span>
                       </div>
-                    </div>
-                    <div className={addPageStyles.lectureActions}>
-                      <button
-                        type="button"
-                        onClick={() => openAddChapter(lectureIndex)}
-                        className={addPageStyles.addChapterButton}
-                      >
-                        <Plus size={14} /> Add Chapter
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeLecture(lectureIndex)}
-                        className={addPageStyles.deleteButton}
-                      >
-                        <X size={16} />
-                      </button>
+                      <div>
+                        <input
+                          type="number"
+                          name="duration.minutes"
+                          value={currentChapter.duration.minutes}
+                          onChange={handleLectureChange}
+                          placeholder="Minutes"
+                          min="0"
+                          max="59"
+                          className={addPageStyles.textarea}
+                        />
+                        <span className={addPageStyles.durationHelper}>
+                          Minutes
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {expandedLectures.includes(lectureIndex) &&
-                    lecture.chapters?.length > 0 && (
-                      <div className={addPageStyles.chaptersContainer(true)}>
-                        {lecture.chapters.map((chapter, chapterIndex) => (
-                          <div
-                            key={chapter.id}
-                            className={addPageStyles.chapterCard}
-                          >
-                            <div className={addPageStyles.chapterContent}>
-                              <div className={addPageStyles.chapterInfo}>
-                                <h4 className={addPageStyles.chapterTitle}>
-                                  {chapter.name}
-                                </h4>
-                                <p className={addPageStyles.chapterTopic}>
-                                  {chapter.topic}
-                                </p>
-                                <div className={addPageStyles.chapterMeta}>
-                                  <span
-                                    className={addPageStyles.chapterDuration}
-                                  >
-                                    <Clock size={12} />{" "}
-                                    {formatDuration(chapter.duration)}
-                                  </span>
-                                  <p className={addPageStyles.chapterUrl}>
-                                    {chapter.videoUrl}
-                                  </p>
-                                </div>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  removeChapter(lectureIndex, chapterIndex)
-                                }
-                                className={addPageStyles.chapterDeleteButton}
-                              >
-                                <X size={14} />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                  <div>
+                    <label className={addPageStyles.inputLabel}>
+                      Video URL *
+                    </label>
+                    <input
+                      type="url"
+                      name="videoUrl"
+                      value={currentChapter.videoUrl}
+                      onChange={handleChapterChange}
+                      placeholder="https://youtube.com/watch?v=..."
+                      className={addPageStyles.textarea}
+                    />
+                  </div>
+
+                  <div className={addPageStyles.modalActions}>
+                    <button
+                      type="button"
+                      onClick={addChapter}
+                      className={`${addPageStyles.modalButtonCompact} ${addPageStyles.modalButtonCompactPrimary}`}
+                    >
+                      Add Chapter
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowChapterForm(false);
+                        setSelectedLectureIndex(null);
+                      }}
+                      className={`${addPageStyles.modalButtonCompact} ${addPageStyles.modalButtonCompactSecondary}`}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
+          )}
+        </div>
+
+        {/**for adding of lectures  */}
+
+        {showLectureForm && (
+          <div className={addPageStyles.modalOverlay}>
+            <div className={addPageStyles.model}>
+              <div className={addPageStyles.modalHeader}>
+                <div className={addPageStyles.modalIconContainer('bg-sky-300')}>
+                  <Video className="text-white size={20}" />
+                </div>
+                <h3 className={addPageStyles.modalTitle}>Add New Lecture</h3>
+              </div>
+              <div className={addPageStyles.modalContent}>
+                <div>
+                  <label className={addPageStyles.inputLabel}>
+                    Lecture Title *
+                  </label>
+                  <input type="text" name="title" value={currentLecture} onChange={handleChapterChange} placeholder="e.g.,Introduction to React" className={addPageStyles.input} />
+                </div>
+
+                <div>
+                  <label className={addPageStyles.inputLabel}>Duration*</label>
+                  <div className={addPageStyles.durationGrid}>
+                    <div>
+                      <input type="number" name="duration.hours" value={currentLecture.duration.hours} onChange={handleChapterChange} placeholder="Hours" min="0" className={addPageStyles.input} />
+
+                      <span className={addPageStyles.durationHelper}>Hours
+
+                      </span>
+                    </div>
+                    <div>
+                      <input type="number" name="duration.minutes" value={currentLecture.duration.minutes} onChange={handleChapterChange} placeholder="Minutes" min="0" max="59" className={addPageStyles.input} />
+
+                      <span className={addPageStyles.durationHelper}>Minutes
+
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+
+                {currentLecture.chapters.length > 0 && (
+                  <div>
+                    <label className={addPageStyles.durationHelper}>
+                      Chapters in this Lecture
+                    </label>
+                    <div className={addPageStyles.chaptersList}>
+                      {currentChapter.chapter.map((chapter) => (
+                        <div key={chapter.id} className={addPageStyles.chapterPreview}>
+                          <div className={addPageStyles.chapterPreviewTitle}>
+                            {chapter.name}
+                          </div>
+                          <div className={addPageStyles.chapterPreviewDuration}>
+                            {formatDuration(chapter.duration)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+
+                <div className={addPageStyles.modalActions}>
+                  <button type="button"
+                    onClick={() => openAddChapter()}
+                    className={`${addPageStyles.modelButton} ${addPageStyles.modalButtonPrimary}`}>
+                    <Plus size={14} />Add Chapter
+
+                  </button>
+                </div>
+
+                <div className="flex gap-2 sm:gap-3 pt-2">
+                  <button type="button" onClick={addLecture} className={`${addPageStyles.modelButton} ${addPageStyles.modalButtonPrimary}`}>Add Lecture</button>
+
+                  <button type="button" onClick={() => setShowChapterForm(false)} className={`${addPageStyles.modelButton} ${addPageStyles.modalButtonSecondary}`}>Cancel</button>
+                </div>
+              </div>
+            </div>
+
           </div>
-
-          {/* Submit */}
-          <div className={addPageStyles.submitContainer}>
-            <button
-              type="submit"
-              className={addPageStyles.submitButton}
-              disabled={loading}
-            >
-              <div className="absolute inset-0 bg-linear-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              {loading
-                ? "Creating..."
-                : `Create ${
-                    formData.courseType === "top" ? "Top" : "Regular"
-                  } Course`}
-            </button>
-          </div>
-        </form>
+        )}
 
 
+        {/**chapter model */}
 
-     {/* Chapter Modal */}
-   {showChapterForm && (
+        {/* Chapter Modal */}
+        {showChapterForm && (
           <div className={addPageStyles.modalOverlay}>
             <div className={addPageStyles.modal}>
               <div className={addPageStyles.modalHeader}>
@@ -1070,7 +1270,7 @@ const toggleLecture = (index) =>
                         type="number"
                         name="duration.hours"
                         value={currentChapter.duration.hours}
-                        onChange={handleLectureChange}
+                        onChange={handleChapterChange}
                         placeholder="Hours"
                         min="0"
                         className={addPageStyles.textarea}
@@ -1084,7 +1284,7 @@ const toggleLecture = (index) =>
                         type="number"
                         name="duration.minutes"
                         value={currentChapter.duration.minutes}
-                        onChange={handleLectureChange}
+                        onChange={handleChapterChange}
                         placeholder="Minutes"
                         min="0"
                         max="59"
@@ -1135,207 +1335,6 @@ const toggleLecture = (index) =>
           </div>
         )}
       </div>
-
-      {/**for adding of lectures  */}
-
-      {showLectureForm && (
-        <div className={addPageStyles.modalOverlay}>
-          <div className={addPageStyles.model}>
-            <div className={addPageStyles.modalHeader}>
-              <div className={addPageStyles.modalIconContainer ('bg-sky-300')}>
-                <Video className="text-white size={20}"/>
-              </div>
-              <h3 className={addPageStyles.modalTitle}>Add New Lecture</h3>
-            </div>
-            <div className={addPageStyles.modalContent}>
-              <div>
-                <label className={addPageStyles.inputLabel}>
-                  Lecture Title *
-                </label>
-                <input type="text" name="title" value={currentLecture} onChange={handleChapterChange} placeholder="e.g.,Introduction to React" className={addPageStyles.input} />
-              </div>
-
-            <div>
-              <label className={addPageStyles.inputLabel}>Duration*</label>
-              <div className={addPageStyles.durationGrid}>
-                <div>
-                  <input type="number" name="duration.hours" value={currentLecture.duration.hours} onChange={handleChapterChange} placeholder="Hours" min="0" className={addPageStyles.input}/>
-
-                  <span className={addPageStyles.durationHelper}>Hours
-
-                  </span>
-                </div>
-                <div>
-                  <input type="number" name="duration.minutes" value={currentLecture.duration.minutes} onChange={handleChapterChange} placeholder="Minutes" min="0" max="59" className={addPageStyles.input}/>
-
-                  <span className={addPageStyles.durationHelper}>Minutes
-
-                  </span>
-              </div>
-              </div>
-            </div>
-
-
-            {currentLecture.chapters.length >0 &&(
-              <div>
-                <label className={addPageStyles.durationHelper}>
-                  Chapters in this Lecture 
-                </label>
-                <div className={addPageStyles.chaptersList}>
-                  {currentChapter.chapter.map((chapter) =>(
-                    <div key={chapter.id} className={addPageStyles.chapterPreview}>
-                      <div className={addPageStyles.chapterPreviewTitle}>
-                        {chapter.name}
-                      </div>
-<div className={addPageStyles.chapterPreviewDuration}>
-  {formatDuration(chapter.duration)}
-</div>
-                    </div>
-                  ))}
-                </div>
-                </div>
-            )}
-
-
-            <div className={addPageStyles.modalActions}>
-              <button type="button"
-              onClick={()=>openAddChapter()}
-              className={`${addPageStyles.modelButton} ${addPageStyles.modalButtonPrimary}`}>
-                <Plus size={14} />Add Chapter
-                
-              </button>
-            </div>
-
-            <div className="flex gap-2 sm:gap-3 pt-2">
-              <button type="button" onClick={addLecture} className={`${addPageStyles.modelButton} ${addPageStyles.modalButtonPrimary}`}>Add Lecture</button>
-
-              <button type="button" onClick={()=>setShowChapterForm(false)} className={`${addPageStyles.modelButton} ${addPageStyles.modalButtonSecondary}`}>Cancel</button>
-            </div>
-            </div>
-          </div>
-
-        </div>
-      )}
-
-
-      {/**chapter model */}
-
-        {/* Chapter Modal */}
-   {showChapterForm && (
-          <div className={addPageStyles.modalOverlay}>
-            <div className={addPageStyles.modal}>
-              <div className={addPageStyles.modalHeader}>
-                <div
-                  className={addPageStyles.modalIconContainer("bg-green-100")}
-                >
-                  <Plus className="text-green-600" size={20} />
-                </div>
-                <h3 className={addPageStyles.modalTitle}>
-                  {selectedLectureIndex !== null
-                    ? "Add Chapter to Lecture"
-                    : "Add Chapter to Current Lecture"}
-                </h3>
-              </div>
-              <div className={addPageStyles.modalContent}>
-                <div>
-                  <label className={addPageStyles.inputLabel}>
-                    Chapter Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={currentChapter.name}
-                    onChange={handleChapterChange}
-                    placeholder="e.g., Course Introduction"
-                    className={addPageStyles.textarea}
-                  />
-                </div>
-
-                <div>
-                  <label className={addPageStyles.inputLabel}>Topic *</label>
-                  <input
-                    type="text"
-                    name="topic"
-                    value={currentChapter.topic}
-                    onChange={handleChapterChange}
-                    placeholder="e.g., What we'll build"
-                    className={addPageStyles.textarea}
-                  />
-                </div>
-
-                <div>
-                  <label className={addPageStyles.inputLabel}>Duration *</label>
-                  <div className={addPageStyles.durationGrid}>
-                    <div>
-                      <input
-                        type="number"
-                        name="duration.hours"
-                        value={currentChapter.duration.hours}
-                        onChange={handleChapterChange}
-                        placeholder="Hours"
-                        min="0"
-                        className={addPageStyles.textarea}
-                      />
-                      <span className={addPageStyles.durationHelper}>
-                        Hours
-                      </span>
-                    </div>
-                    <div>
-                      <input
-                        type="number"
-                        name="duration.minutes"
-                        value={currentChapter.duration.minutes}
-                        onChange={handleChapterChange}
-                        placeholder="Minutes"
-                        min="0"
-                        max="59"
-                        className={addPageStyles.textarea}
-                      />
-                      <span className={addPageStyles.durationHelper}>
-                        Minutes
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className={addPageStyles.inputLabel}>
-                    Video URL *
-                  </label>
-                  <input
-                    type="url"
-                    name="videoUrl"
-                    value={currentChapter.videoUrl}
-                    onChange={handleChapterChange}
-                    placeholder="https://youtube.com/watch?v=..."
-                    className={addPageStyles.textarea}
-                  />
-                </div>
-
-                <div className={addPageStyles.modalActions}>
-                  <button
-                    type="button"
-                    onClick={addChapter}
-                    className={`${addPageStyles.modalButtonCompact} ${addPageStyles.modalButtonCompactPrimary}`}
-                  >
-                    Add Chapter
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowChapterForm(false);
-                      setSelectedLectureIndex(null);
-                    }}
-                    className={`${addPageStyles.modalButtonCompact} ${addPageStyles.modalButtonCompactSecondary}`}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>   
     </div>
   );
 };

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+// ❌ REMOVED react-hot-toast import (this was the error)
+
 import { dashboardStyles } from "../assets/dummyStyles";
 import {
   Users,
@@ -273,42 +275,25 @@ const DashboardPage = () => {
                     </td>
 
                     <td className={dashboardStyles.studentsCellCell}>
-                      <div className='flex items-center text-gray-700'>
-                        <span className={dashboardStyles.studentsText}>{course.students}
+                      <span className={dashboardStyles.studentsText}>
+                        {course.students}
+                      </span>
+                    </td>
+
+                    <td className={dashboardStyles.priceCell}>
+                      {course.price}
+                    </td>
+
+                    <td className="px-4 sm:px-6 py-3 sm:py-4">
+                      <div className={dashboardStyles.purchasesContainer}>
+                        <ShoppingCart className={dashboardStyles.purchasesIcon} />
+                        <span className={dashboardStyles.purchasesText}>
+                          {course.purchases}
                         </span>
                       </div>
                     </td>
 
-<td className={dashboardStyles.priceCell}>
-  {course.price}
-</td>
-
-<td className="px-4 sm:px-6 py-3 sm:py-4">
-  <div className={dashboardStyles.purchasesContainer}>
-    <ShoppingCart className={dashboardStyles.purchasesIcon}/>
-    <span className={dashboardStyles.purchasesText}>
-      {course.purchases}
-
-    </span>
-  </div>
-</td>
-
-<td className={dashboardStyles.earningsCell}>{course.earnings}</td>
-
-                    <td className={dashboardStyles.tableCell}>
-                      {course.price}
-                    </td>
-
-                    <td className={dashboardStyles.tableCell}>
-                      {course.students}
-                    </td>
-                    <td className={dashboardStyles.tableCell}>
-                      {course.price}
-                    </td>
-                    <td className={dashboardStyles.tableCell}>
-                      {course.purchases}
-                    </td>
-                    <td className={dashboardStyles.tableCell}>
+                    <td className={dashboardStyles.earningsCell}>
                       {course.earnings}
                     </td>
                   </tr>
@@ -316,21 +301,25 @@ const DashboardPage = () => {
               </tbody>
             </table>
 
-            {filteredCourses.length===0 && !loading &&(
+            {filteredCourses.length === 0 && !loading && (
               <div className={dashboardStyles.emptyState}>
-                <Search className={dashboardStyles.emptyIcon}/>
-                <p className={dashboardStyles.emptyText}>No Courses found matching your search</p>
-
-                <button onClick={()=>setSearchTerm(" ")} className={dashboardStyles.clearButton}>
+                <Search className={dashboardStyles.emptyIcon} />
+                <p className={dashboardStyles.emptyText}>
+                  No Courses found matching your search
+                </p>
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className={dashboardStyles.clearButton}
+                >
                   Clear Search
                 </button>
-                </div>
+              </div>
             )}
 
             {loading && (
               <div className={dashboardStyles.loadingOverlay}>
-                <div className={dashboardStyles.loadingSpinner}/>
-                </div>
+                <div className={dashboardStyles.loadingSpinner} />
+              </div>
             )}
           </div>
         </div>
