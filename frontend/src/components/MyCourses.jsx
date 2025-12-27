@@ -1,21 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { myCoursesCustomStyles,myCoursesStyles } from "../assets/dummyStyles";
-import { useUser,useAuth } from "@clerk/clerk-react";
+import {
+  animationDelays,
+  myCoursesCustomStyles,
+  myCoursesStyles,
+} from "../assets/dummyStyles";
+import { useUser, useAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Star } from "lucide-react";
 
-const API_BASE ='http://localhost:4000/';
+const API_BASE = "http://localhost:4000/";
 
+const MyCourses = () => {
+  const navigate = useNavigate();
 
-const MyCourses=()=>{
-  const navigate =useNavigate();
-  const {isSigendIn}=useUser();
-  const {getToken}=useAuth();
-  const [courses, setCourses] =useState([]);
-  const [loading, setLoading] =useState([true]);
-  const [error, setError] =useState([null]);
+  // ❌ isSigendIn → ✅ isSignedIn
+  const { isSignedIn } = useUser();
+  const { getToken } = useAuth();
 
+  const [courses, setCourses] = useState([]);
+
+  // ❌ useState([true]) → ✅ useState(true)
+  const [loading, setLoading] = useState(true);
+
+  // ❌ useState([null]) → ✅ useState(null)
+  const [error, setError] = useState(null);
 
   const [userRatings, setUserRatings] = useState(() => {
     try {
@@ -28,7 +37,6 @@ const MyCourses=()=>{
 
   const [hoverRatings, setHoverRatings] = useState({});
 
-
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -38,17 +46,18 @@ const MyCourses=()=>{
     } catch {}
   }, [userRatings]);
 
+  // ================= FETCH =================
 
-  //fetch
-  seEffect(() => {
+  // ❌ seEffect → ✅ useEffect
+  useEffect(() => {
     let mounted = true;
     const controller = new AbortController();
 
     const fetchMyCourses = async () => {
       setLoading(true);
       setError(null);
+
       try {
-        // If user isn't signed in, don't call the protected endpoint.
         if (!isSignedIn) {
           if (mounted) {
             setCourses([]);
@@ -56,22 +65,21 @@ const MyCourses=()=>{
           }
           return;
         }
-        // Prepare headers and attempt to include Clerk token
+
         const headers = { "Content-Type": "application/json" };
+
         try {
           const token = await getToken().catch(() => null);
           if (token) headers.Authorization = `Bearer ${token}`;
-        } catch (e) {
-          // ignore token acquisition failure; server will respond 401
-        }
-        const bookingsRes = await fetch(`${API_BASE}/api/booking/my`, {
+        } catch (e) {}
+
+        const bookingsRes = await fetch(`${API_BASE}api/booking/my`, {
           method: "GET",
           credentials: "include",
           signal: controller.signal,
           headers,
         });
 
-        // explicit handling for unauthorized
         if (bookingsRes.status === 401) {
           throw new Error(
             "Unauthorized — please sign in to view your bookings."
@@ -88,11 +96,12 @@ const MyCourses=()=>{
         const bookingsJson = await bookingsRes.json();
         if (!bookingsJson || bookingsJson.success === false) {
           throw new Error(
-            (bookingsJson && bookingsJson.message) || "Failed to load bookings"
+            bookingsJson?.message || "Failed to load bookings"
           );
         }
+
         const bookings = bookingsJson.bookings || [];
-        // (the rest of your logic is unchanged — fetch courses for each booking)
+
         const combined = await Promise.all(
           bookings.map(async (b) => {
             const courseId = b.course ?? b.courseId ?? null;
@@ -100,13 +109,11 @@ const MyCourses=()=>{
 
             try {
               const cHeaders = { "Content-Type": "application/json" };
-              try {
-                const token = await getToken().catch(() => null);
-                if (token) cHeaders.Authorization = `Bearer ${token}`;
-              } catch (e) {}
+              const token = await getToken().catch(() => null);
+              if (token) cHeaders.Authorization = `Bearer ${token}`;
 
               const courseRes = await fetch(
-                `${API_BASE}/api/course/${courseId}`,
+                `${API_BASE}api/course/${courseId}`,
                 {
                   method: "GET",
                   credentials: "include",
@@ -115,20 +122,10 @@ const MyCourses=()=>{
                 }
               );
 
-              if (!courseRes.ok) {
-                console.warn(
-                  `Course ${courseId} not available (status ${courseRes.status}). Skipping booking.`
-                );
-                return null;
-              }
+              if (!courseRes.ok) return null;
 
-              const courseJson = await courseRes.json().catch(() => null);
-              if (!courseJson || !courseJson.success || !courseJson.course) {
-                console.warn(
-                  `Course ${courseId} response invalid; skipping booking.`
-                );
-                return null;
-              }
+              const courseJson = await courseRes.json();
+              if (!courseJson?.course) return null;
 
               const courseData = courseJson.course;
 
@@ -138,248 +135,260 @@ const MyCourses=()=>{
                   ...courseData,
                   image: courseData.image || null,
                   avgRating:
-                    typeof courseData.avgRating !== "undefined"
-                      ? courseData.avgRating
-                      : courseData.rating ?? 0,
+                    courseData.avgRating ??
+                    courseData.rating ??
+                    0,
                   totalRatings:
-                    typeof courseData.totalRatings !== "undefined"
-                      ? courseData.totalRatings
-                      : courseData.ratingCount ?? 0,
+                    courseData.totalRatings ??
+                    courseData.ratingCount ??
+                    0,
                 },
               };
-            } catch (err) {
-              if (controller.signal.aborted) return null;
-              console.warn("Course fetch error for", courseId, err);
+            } catch {
               return null;
             }
           })
         );
 
         if (!mounted) return;
+
         const valid = combined.filter(Boolean);
+
         const uiCourses = valid.map(({ booking, course }) => ({
           booking,
-          id: course._id ?? course.id ?? booking.course ?? booking.courseId,
-          name: course.name ?? booking.courseName ?? "Untitled Course",
-          teacher: course.teacher ?? booking.teacherName ?? "",
+          id:
+            course._id ??
+            course.id ??
+            booking.course ??
+            booking.courseId,
+          name:
+            course.name ??
+            booking.courseName ??
+            "Untitled Course",
+          teacher:
+            course.teacher ??
+            booking.teacherName ??
+            "",
           image: course.image ?? null,
           avgRating: course.avgRating ?? 0,
           totalRatings: course.totalRatings ?? 0,
-          isFree: !!(
-            course.pricingType === "free" ||
-            !course.price ||
-            (course.price.sale == null && course.price.original == null) ||
-            (course.price &&
-              (course.price.sale === 0 || course.price.original === 0))
-          ),
-          price: course.price ?? {
-            original: booking.price ?? 0,
-            sale: booking.price ?? 0,
-          },
-          overview: course.overview ?? "",
-          lectures: course.lectures ?? [],
-          rawCourse: course,
-          rawBooking: booking,
+          price:
+            course.price ?? {
+              original: booking.price ?? 0,
+              sale: booking.price ?? 0,
+            },
         }));
-        setCourses(uiCourses);
-        // fetch user's per-course rating (unchanged)
-        if (isSignedIn && uiCourses.length > 0) {
-          const ratingPromises = uiCourses.map(async (c) => {
-            if (!c.id) return null;
-            try {
-              const rHeaders = { "Content-Type": "application/json" };
-              try {
-                const token = await getToken().catch(() => null);
-                if (token) rHeaders.Authorization = `Bearer ${token}`;
-              } catch (e) {}
-              const res = await fetch(
-                `${API_BASE}/api/course/${c.id}/my-rating`,
-                {
-                  method: "GET",
-                  headers: rHeaders,
-                  credentials: "include",
-                }
-              );
-              const data = await res.json().catch(() => null);
-              if (res.ok && data && data.success && data.myRating) {
-                return { courseId: c.id, myRating: data.myRating.rating };
-              }
-            } catch (err) {}
-            return null;
-          });
 
-          const results = await Promise.all(ratingPromises);
-          const ratingsMap = {};
-          results.forEach((r) => {
-            if (r && r.courseId) ratingsMap[r.courseId] = r.myRating;
-          });
-          if (mounted && Object.keys(ratingsMap).length) {
-            setUserRatings((prev) => ({ ...prev, ...ratingsMap }));
-          }
-        }
+        setCourses(uiCourses);
       } catch (err) {
-        if (mounted) setError(err.message || "Failed to load your courses");
+        if (mounted)
+          setError(err.message || "Failed to load your courses");
       } finally {
         if (mounted) setLoading(false);
       }
     };
+
     fetchMyCourses();
+
     return () => {
       mounted = false;
       controller.abort();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSignedIn]);
+  }, [isSignedIn, getToken]);
 
-//
+  // ================= RATING =================
 
-
-//to submit rating to serverside 
-
-
-// Helper: optimistic submit rating to server
-const submitRatingToServer = async (courseId, ratingValue) => {
-  try {
-    const headers = { "Content-Type": "application/json" };
+  const submitRatingToServer = async (courseId, ratingValue) => {
     try {
-      if (getToken) {
-        const token = await getToken().catch(() => null);
-        if (token) headers.Authorization = `Bearer ${token}`;
-      }
-    } catch (err) {
-      // ignore token failure
-    }
-    const res = await fetch(`${API_BASE}/api/course/${courseId}/rate`, {
-      method: "POST",
-      headers,
-      credentials: "include",
-      body: JSON.stringify({ rating: ratingValue }),
-    });
+      const headers = { "Content-Type": "application/json" };
+      const token = await getToken().catch(() => null);
+      if (token) headers.Authorization = `Bearer ${token}`;
 
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok && !data.success) {
-      const msg =
-        (data && (data.message || data.error)) ||
-        `Failed to rate (${res.status})`;
-      throw new Error(msg);
-    }
-
-    const avg =
-      data.avgRating ?? data.course?.avgRating ?? data.avgRating ?? null;
-    const total =
-      data.totalRatings ??
-      data.course?.ratingCount ??
-      data.totalRatings ??
-      null;
-
-    if (avg !== null || total !== null) {
-      setCourses((prev) =>
-        prev.map((c) =>
-          c.id === courseId
-            ? {
-                ...c,
-                avgRating: typeof avg === "number" ? avg : c.avgRating,
-                totalRatings:
-                  typeof total === "number" ? total : c.totalRatings,
-              }
-            : c
-        )
+      const res = await fetch(
+        `${API_BASE}api/course/${courseId}/rate`,
+        {
+          method: "POST",
+          headers,
+          credentials: "include",
+          body: JSON.stringify({ rating: ratingValue }),
+        }
       );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Rating failed");
+      }
+
+      setUserRatings((prev) => ({
+        ...prev,
+        [courseId]: ratingValue,
+      }));
+
+      toast.success("Thanks for rating!");
+    } catch (err) {
+      toast.error(err.message);
     }
-    setUserRatings((prev) => ({ ...prev, [courseId]: ratingValue }));
-    toast.success("Thanks for rating!");
-    return { success: true };
-  } catch (err) {
-    console.error("submitRatingToServer:", err);
-    toast.error(err.message || "Failed to submit rating");
-    return { success: false, error: err };
-  }
-};
-const handleSetRating=async(e,courseId,rating)=>{
-  e.stopPropogation();
-  const {isSigendIn: signed}={isSigendIn};
-  if(!signed){
-    toast('please sign in to submit a rating ',{icon:"⭐"});
-    return;
-  }
-  setUserRatings((prev)=>({
-    ...prev,
-    [courseId]:rating,
-  }));
-await submitRatingToServer(courseId,rating);
-};
+  };
 
-const handleViewCourse=(courseId)=>{
-  if(!courseId) return;
-  navigate(`/course/${courseId}`);
-};
+  const handleSetRating = async (e, courseId, rating) => {
+    // ❌ stopPropogation → ✅ stopPropagation
+    e.stopPropagation();
 
-//for Star
-const renderInteractiveStars = (c) => {
-  const userRating = userRatings[c.id] || 0;
-  const hover = hoverRatings[c.id] || 0;
-  const baseDisplay = userRating || Math.round(c.avgRating || 0);
-  const displayRating = hover || baseDisplay;
+    if (!isSignedIn) {
+      toast("Please sign in to submit rating", {
+        icon: "⭐",
+      });
+      return;
+    }
+
+    setUserRatings((prev) => ({
+      ...prev,
+      [courseId]: rating,
+    }));
+
+    await submitRatingToServer(courseId, rating);
+  };
+
+  const handleViewCourse = (courseId) => {
+    if (!courseId) return;
+    navigate(`/course/${courseId}`);
+  };
+
+  // ================= STARS =================
+
+  const renderInteractiveStars = (c) => {
+    const userRating = userRatings[c.id] || 0;
+    const hover = hoverRatings[c.id] || 0;
+    const displayRating =
+      hover || userRating || Math.round(c.avgRating || 0);
+
+    return (
+      <div style={{ display: "flex", gap: 4 }}>
+        {[1, 2, 3, 4, 5].map((idx) => (
+          <button
+            key={idx}
+            onClick={(e) =>
+              handleSetRating(e, c.id, idx)
+            }
+            onMouseEnter={() =>
+              setHoverRatings((p) => ({
+                ...p,
+                [c.id]: idx,
+              }))
+            }
+            onMouseLeave={() =>
+              setHoverRatings((p) => ({
+                ...p,
+                [c.id]: 0,
+              }))
+            }
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            <Star
+              size={16}
+              fill={
+                idx <= displayRating
+                  ? "#f59e0b"
+                  : "none"
+              }
+              stroke="#f59e0b"
+            />
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  // ================= UI STATES =================
+
+  if (loading) {
+    return (
+      <div className={myCoursesStyles.pageContainer}>
+        <h1 className={myCoursesStyles.header}>
+          Loading courses...
+        </h1>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={myCoursesStyles.pageContainer}>
+        <h1
+          className={myCoursesStyles.header}
+          style={{ color: "red" }}
+        >
+          {error}
+        </h1>
+      </div>
+    );
+  }
+
+  if (!courses || courses.length === 0) {
+    return (
+      <div className={myCoursesStyles.pageContainer}>
+        <h1 className={myCoursesStyles.header}>
+          You haven't purchased any courses yet.
+        </h1>
+      </div>
+    );
+  }
+
+  // ================= MAIN =================
+
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{ display: "flex", gap: 4, alignItems: "center" }}
-      >
-        {Array.from({ length: 5 }).map((_, i) => {
-          const idx = i + 1;
-          const filled = idx <= displayRating;
-          return (
-            <button
-              key={i}
-              aria-label={`Rate ${idx} stars`}
-              onClick={(e) => handleSetRating(e, c.id, idx)}
-              onMouseEnter={() =>
-                setHoverRatings((s) => ({ ...s, [c.id]: idx }))
-              }
-              onMouseLeave={() =>
-                setHoverRatings((s) => ({ ...s, [c.id]: 0 }))
-              }
+    <div className={myCoursesStyles.pageContainer}>
+      <div className={myCoursesStyles.mainContainer}>
+        <h1 className={myCoursesStyles.header}>
+          My Courses
+        </h1>
+
+        <div className={myCoursesStyles.grid}>
+          {courses.map((course, index) => (
+            <div
+              key={course.id ?? index}
+              className={myCoursesStyles.courseCard}
               style={{
-                background: "transparent",
-                border: "none",
-                padding: 2,
-                cursor: "pointer",
+                animationDelay: `${index * 100}ms`,
+                animation: `fadeInUp 0.6s ease-out ${
+                  index * 100
+                }ms both`,
+              }}
+              role="button"
+              tabIndex={0}
+              onClick={() =>
+                handleViewCourse(course.id)
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleViewCourse(course.id);
+                }
               }}
             >
-              <Star
-                size={16}
-                fill={filled ? "currentColor" : "none"}
-                stroke="currentColor"
-                style={{
-                  color: filled ? "#f59e0b" : "#d1d5db",
-                }}
-              />
-            </button>
-          );
-        })}
-      </div>
-      <div
-        style={{ display: "flex", flexDirection: "column", marginLeft: 6 }}
-      >
-        <div style={{ fontWeight: 700, fontSize: 13 }}>
-          {(c.avgRating || 0).toFixed(1)}
-        </div>
-        <div style={{ fontSize: 12, color: "#6b7280" }}>
-          ({c.totalRatings || 0})
+              <div
+                className={myCoursesStyles.imageContainer}
+              >
+                <img
+                  src={course.image || undefined}
+                  alt={course.name}
+                  className={
+                    myCoursesStyles.courseImage
+                  }
+                />
+              </div>
+
+              {renderInteractiveStars(course)}
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-
-
-  return(
-    <div>
-
-    </div>
-  )
-}
-export default MyCourses
+export default MyCourses;
