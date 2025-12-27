@@ -7,7 +7,7 @@ import {
 import { useUser, useAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Star } from "lucide-react";
+import { Plane, Star, User } from "lucide-react";
 
 const API_BASE = "http://localhost:4000/";
 
@@ -382,11 +382,40 @@ const MyCourses = () => {
                 />
               </div>
 
-              {renderInteractiveStars(course)}
+              <div className={myCoursesStyles.courseContent}>
+                <h3 className={myCoursesStyles.className}>
+ {course.name}
+                </h3>
+                <div className={myCoursesStyles.infoContainer}>
+                  <div className={myCoursesStyles.ratingContainer}>
+                    {renderInteractivateStars(course)}
+                  </div>
+
+                  <div className={myCoursesStyles.teacherContainer}>
+                    <User className={myCoursesStyles.ratingContainer}/>
+                    <span className={myCoursesStyles.teacherText}>
+                      {course.teacher}
+                    </span>
+                     </div>
+                </div>
+
+                <button onClick={(e)=>{
+                  e.stopPropagation();
+                  handleViewCourse(course.id)
+                }}
+                className={myCoursesStyles.viewButton}>
+                  <Play className={myCoursesStyles.buttonIcon}/>
+                  <span>View courses</span>
+
+                </button>
+              </div>
+
+          
             </div>
           ))}
         </div>
       </div>
+      <style>{myCoursesStyles}</style>
     </div>
   );
 };
