@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Plane, Star, User } from "lucide-react";
 
-const API_BASE = "http://localhost:4000/";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const MyCourses = () => {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ const MyCourses = () => {
         "userCourseRatings",
         JSON.stringify(userRatings)
       );
-    } catch {}
+    } catch { }
   }, [userRatings]);
 
   // ================= FETCH =================
@@ -71,7 +71,7 @@ const MyCourses = () => {
         try {
           const token = await getToken().catch(() => null);
           if (token) headers.Authorization = `Bearer ${token}`;
-        } catch (e) {}
+        } catch (e) { }
 
         const bookingsRes = await fetch(`${API_BASE}api/booking/my`, {
           method: "GET",
@@ -355,9 +355,8 @@ const MyCourses = () => {
               className={myCoursesStyles.courseCard}
               style={{
                 animationDelay: `${index * 100}ms`,
-                animation: `fadeInUp 0.6s ease-out ${
-                  index * 100
-                }ms both`,
+                animation: `fadeInUp 0.6s ease-out ${index * 100
+                  }ms both`,
               }}
               role="button"
               tabIndex={0}
@@ -384,7 +383,7 @@ const MyCourses = () => {
 
               <div className={myCoursesStyles.courseContent}>
                 <h3 className={myCoursesStyles.className}>
- {course.name}
+                  {course.name}
                 </h3>
                 <div className={myCoursesStyles.infoContainer}>
                   <div className={myCoursesStyles.ratingContainer}>
@@ -392,25 +391,25 @@ const MyCourses = () => {
                   </div>
 
                   <div className={myCoursesStyles.teacherContainer}>
-                    <User className={myCoursesStyles.ratingContainer}/>
+                    <User className={myCoursesStyles.ratingContainer} />
                     <span className={myCoursesStyles.teacherText}>
                       {course.teacher}
                     </span>
-                     </div>
+                  </div>
                 </div>
 
-                <button onClick={(e)=>{
+                <button onClick={(e) => {
                   e.stopPropagation();
                   handleViewCourse(course.id)
                 }}
-                className={myCoursesStyles.viewButton}>
-                  <Play className={myCoursesStyles.buttonIcon}/>
+                  className={myCoursesStyles.viewButton}>
+                  <Play className={myCoursesStyles.buttonIcon} />
                   <span>View courses</span>
 
                 </button>
               </div>
 
-          
+
             </div>
           ))}
         </div>

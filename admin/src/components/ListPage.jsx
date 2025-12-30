@@ -15,7 +15,8 @@ const ListPage = () => {
   const [loading, setLoading] = useState(false);
 
 
-  const API_BASE = "http://localhost:4000";
+  const API_BASE = import.meta.env.VITE_API_BASE;
+  
 
   {/**build image URL  */ }
   const getImageUrl = (imagePath) => {

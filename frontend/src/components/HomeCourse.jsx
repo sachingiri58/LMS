@@ -6,19 +6,19 @@ import { ArrowRight, Star, User } from "lucide-react";
 import { Slide, ToastContainer, toast } from "react-toastify";
 import { useUser, useAuth } from "@clerk/clerk-react";
 
-const API_BASE ='http://localhost:4000/';
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const HomeCourse = () => {
   const navigate = useNavigate();
   const { title, course: courseFont, detail } = homeCoursesStyles.fonts;
-  const [courses, setCourses]=useState([]);
- const [loading,setLoading]=useState(true);
- const [error,setError]=useState(null);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
 
- //clerk
- const {isSignedIn,user}=useUser(); //user is null if not signed in 
- const {getToken}=useAuth();
+  //clerk
+  const { isSignedIn, user } = useUser(); //user is null if not signed in 
+  const { getToken } = useAuth();
 
 
 
@@ -39,62 +39,62 @@ const HomeCourse = () => {
         "userCourseRatings",
         JSON.stringify(userRatings)
       );
-    } catch {}
+    } catch { }
   }, [userRatings]);
 
-//fetch function
-useEffect (()=>{
-  let mounted=true;
-  setLoading(true);
-  setError(null);
+  //fetch function
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    setError(null);
 
 
 
-  fetch(`${API_BASE}/api/course/public?home=true & limit=8`)
-  .then(async(res)=>{
-    if(!res.ok){
-      const text =await res.text();
-      throw new Error (text || 'Failed to fetch courses from server ');
-    }
-    return res.json();
+    fetch(`${API_BASE}/api/course/public?home=true & limit=8`)
+      .then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text || 'Failed to fetch courses from server ');
+        }
+        return res.json();
 
-  })
-  .then((json) => {
-    if (!mounted) return;
-    const items = (json && (json.items || json.courses || [])) || [];
-    const mapped = items.map((c) => ({
-      id: c._id || c.id,
-      name: c.name,
-      teacher: c.teacher,
-      image: c.image,
-      price: c.price || {
-        original: c.price?.original,
-        sale: c.price?.sale,
-      },
-      isFree:
-        c.pricingType === "free" ||
-        !c.price ||
-        (c.price && !c.price.sale && !c.price.original),
-      // prefer avgRating / totalRatings from backend if available
-      avgRating:
-        typeof c.avgRating !== "undefined" ? c.avgRating : c.rating || 0,
-      totalRatings:
-        typeof c.totalRatings !== "undefined"
-          ? c.totalRatings
-          : c.ratingCount || 0,
-      courseType: c.courseType || "regular",
-    }));
-    setCourses(mapped)
-})
-.catch((err) =>{
-  console.log('Failed to lead courses',err);
-  if(mounted) setError('     ');
-})
-.finally(()=> mounted && setLoading(false));
-return ()=>{
-  mounted=false;
-};
-},[]);
+      })
+      .then((json) => {
+        if (!mounted) return;
+        const items = (json && (json.items || json.courses || [])) || [];
+        const mapped = items.map((c) => ({
+          id: c._id || c.id,
+          name: c.name,
+          teacher: c.teacher,
+          image: c.image,
+          price: c.price || {
+            original: c.price?.original,
+            sale: c.price?.sale,
+          },
+          isFree:
+            c.pricingType === "free" ||
+            !c.price ||
+            (c.price && !c.price.sale && !c.price.original),
+          // prefer avgRating / totalRatings from backend if available
+          avgRating:
+            typeof c.avgRating !== "undefined" ? c.avgRating : c.rating || 0,
+          totalRatings:
+            typeof c.totalRatings !== "undefined"
+              ? c.totalRatings
+              : c.ratingCount || 0,
+          courseType: c.courseType || "regular",
+        }));
+        setCourses(mapped)
+      })
+      .catch((err) => {
+        console.log('Failed to lead courses', err);
+        if (mounted) setError('     ');
+      })
+      .finally(() => mounted && setLoading(false));
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
 
   const showLoginToast = () => {
@@ -126,7 +126,7 @@ return ()=>{
 
   //for rating to set bu user also show avg rating given by all the users.
 
-   const submitRatingToServer = async (courseId, ratingValue) => {
+  const submitRatingToServer = async (courseId, ratingValue) => {
     try {
       const headers = { "Content-Type": "application/json" };
       // try to get Clerk JWT token if available (works with Clerk)
@@ -172,11 +172,11 @@ return ()=>{
         prev.map((c) =>
           c.id === courseId
             ? {
-                ...c,
-                avgRating: typeof avg === "number" ? avg : c.avgRating,
-                totalRatings:
-                  typeof total === "number" ? total : c.totalRatings,
-              }
+              ...c,
+              avgRating: typeof avg === "number" ? avg : c.avgRating,
+              totalRatings:
+                typeof total === "number" ? total : c.totalRatings,
+            }
             : c
         )
       );
@@ -194,14 +194,14 @@ return ()=>{
   };
 
 
-  const handleSetRating =async (e, courseId, rating) => {
+  const handleSetRating = async (e, courseId, rating) => {
     e.stopPropagation();
-    if(isSignedIn){
-      toast('please sign in to submit a rating...',{icon: "⭐"});
+    if (isSignedIn) {
+      toast('please sign in to submit a rating...', { icon: "⭐" });
       return;
     }
     setUserRatings((prev) => ({ ...prev, [courseId]: rating }));
-    await submitRatingToServer(courseId,rating);
+    await submitRatingToServer(courseId, rating);
   };
 
   const renderInteractiveStars = (course) => {
@@ -232,11 +232,10 @@ return ()=>{
                 onMouseLeave={() =>
                   setHoverRatings((s) => ({ ...s, [course.id]: 0 }))
                 }
-                className={`${homeCoursesStyles.starButton} ${
-                  filled
+                className={`${homeCoursesStyles.starButton} ${filled
                     ? homeCoursesStyles.starButtonActive
                     : homeCoursesStyles.starButtonInactive
-                }`}
+                  }`}
                 style={{ background: "transparent" }}
               >
                 <Star
@@ -284,15 +283,15 @@ return ()=>{
 
 
 
-{loading ?(
-  <div className="p-6 text-center">
-    loading courses...
+        {loading ? (
+          <div className="p-6 text-center">
+            loading courses...
 
-  </div>
-):error ?(
-<div className="p-6 text-center text-red-500 ">{error}</div>
-)
-:( <> </>)}
+          </div>
+        ) : error ? (
+          <div className="p-6 text-center text-red-500 ">{error}</div>
+        )
+          : (<> </>)}
         {/* Courses */}
         <div className={homeCoursesStyles.coursesGrid}>
           {courses.map((course) => {

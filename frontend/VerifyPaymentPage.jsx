@@ -3,7 +3,7 @@ import { useAuth } from "@clerk/clerk-react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const API_BASE = "http://localhost:4000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const VerifyPaymentPage = () => {
   const location = useLocation();          
